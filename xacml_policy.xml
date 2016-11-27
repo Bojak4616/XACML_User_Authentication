@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy
+  xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17
+  http://docs.oasis-open.org/xacml/3.0/xacml-core-v3-schema-wd-17.xsd"
+  PolicyId="urn:oasis:names:tc:xacml:3.0:UserAuthentication"
+  Version="1.0"
+  RuleCombiningAlgId="identifier:rule-combining-algorithm:deny-overrides">
+  <Description>
+    Authenticate Users based on two questions
+  </Description>
+  <Target/>
+  <Rule RuleId= "Authenticate" Effect="Permit">
+    <Description>
+      Authenticate one of the three specified users. Must match all of the attributes, two of which will be pulled from the PIP.
+    </Description>
+    <Target>
+      <Subjects>
+        <!-- Establish the first user and the attributes required for them to authenticate -->
+        <Subject>
+          <SubjectMatch MatchId="urn:oasis:names:tc:xacml:2.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
+              harambe
+            </AttributeValue>
+            <SubjectAttributeDesignator>
+              username
+            </SubjectAttributeDesignator>
+
+            <AttributeValue
+              DataType="http://www.w3.org/2001/XMLSchema#string">
+              Password
+              </AttributeValue>
+            <AttributeDesignator
+              MustBePresent="True"
+              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+
+              <AttributeValue
+              DataType="http://www.w3.org/2001/XMLSchema#string">
+                AccountCreationDate
+              </AttributeValue>
+            <AttributeDesignator
+              MustBePresent="True"
+              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+          </SubjectMatch>
+        </Subject>
+
+        <!-- Establish the second user and the attributes required for them to authenticate -->
+        <Subject>
+          <SubjectMatch MatchId="urn:oasis:names:tc:xacml:2.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
+              smitty
+            </AttributeValue>
+            <SubjectAttributeDesignator>
+              username
+            </SubjectAttributeDesignator>
+
+            <AttributeValue
+              DataType="http://www.w3.org/2001/XMLSchema#string">
+              Password
+              </AttributeValue>
+            <AttributeDesignator
+              MustBePresent="True"
+              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+
+              <AttributeValue
+              DataType="http://www.w3.org/2001/XMLSchema#string">
+                AccountCreationDate
+              </AttributeValue>
+            <AttributeDesignator
+              MustBePresent="True"
+              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+          </SubjectMatch>
+        </Subject>
+
+        <!-- Establish the third user and the attributes required for them to authenticate -->
+        <Subject>
+          <SubjectMatch MatchId="urn:oasis:names:tc:xacml:2.0:function:string-equal">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
+              bojak
+            </AttributeValue>
+            <SubjectAttributeDesignator>
+              username
+            </SubjectAttributeDesignator>
+
+            <AttributeValue
+              DataType="http://www.w3.org/2001/XMLSchema#string">
+              Password
+              </AttributeValue>
+            <AttributeDesignator
+              MustBePresent="True"
+              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+
+              <AttributeValue
+              DataType="http://www.w3.org/2001/XMLSchema#string">
+                AccountCreationDate
+              </AttributeValue>
+            <AttributeDesignator
+              MustBePresent="True"
+              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+          </SubjectMatch>
+        </Subject>
+
+      </Subjects>
+    </Target>
+  </Rule>
+</Policy>
