@@ -99,7 +99,7 @@ def pip_compare(pep_attr, pip_attr):
 
 if __name__ == '__main__':
     path_to_pip = os.getcwd() + '/pdp_pip'
-    path_to_pep = os.getcwd() + '/pep_pdp'
+    path_to_pep = '/tmp/pep_pdp'
     # Pipes faster than writing to disk
 
     # Try/Except to prevent someone from create a pipe with the same name to DoS
@@ -107,9 +107,13 @@ if __name__ == '__main__':
         # Create a fresh pipe, deleting anything that was previously in there
         # Limit permissions so that other users can not read the pipe
         os.mkfifo(path_to_pip, 0600)
+	os.mkfifo(path_to_pep, 0600)
     except OSError:
         os.unlink(path_to_pip)
         os.mkfifo(path_to_pip, 0600)
+	
+	os.unlink(path_to_pep)
+        os.mkfifo(path_to_pep, 0600)
 
     try:
         while True:

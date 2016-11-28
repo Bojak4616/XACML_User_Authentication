@@ -26,7 +26,7 @@ PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, cons
 	const char* pUsername;
 	const char* password;
 	const char* whenCreated;
-	const char* path_to_pdp = '/tmp/pep_pdp';
+	const char* path_to_pdp = "/tmp/pep_pdp";
 	struct pam_message msg;
 	
 	retval = pam_get_item(pamh, &pUsername, "Username: ");
@@ -54,7 +54,6 @@ AttributeId=\"whenCreated\"> \
 		return retval;
 	}
 	
-	mkfifo(path_to_pdp ,0600);
 	*fp = FILE *fopen(path_to_pdp, 'w');
 	fprintf(fp, "%s", final);
 	fclose( FILE *fp );
