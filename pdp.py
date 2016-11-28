@@ -2,8 +2,8 @@
 
 import os
 import sys
-import hashlib
-from time import sleep
+import string
+from bs4 import BeautifulSoup
 
 CONST_PERMIT = """
 <Response>
@@ -21,6 +21,7 @@ CONST_DENY = """
 </Response>
 """
 
+
 def parse_policy():
     try:
         with open('xacml_policy.xml', 'r') as XML:
@@ -29,9 +30,34 @@ def parse_policy():
         print "[!] xacml_policy.xml could not be opened"
         sys.exit(1)
 
-    # This will return some PARSED xml or vars to send to the PIP for more info
-    # print xml
-    return str(xml)
+    soup = BeautifulSoup(xml, 'lxml-xml')
+
+    # 0=harambe 1=password 2=AccountCreationDate 3=smitty  6=bojak
+    allowedUsers = []
+    allowedUsers.append(soup.find_all('AttributeValue')[0].contents[0])
+    allowedUsers.append(soup.find_all('AttributeValue')[3].contents[0])
+    allowedUsers.append(soup.find_all('AttributeValue')[6].contents[0])
+    for item in xrange(len(allowedUsers)):
+        allowedUsers[item] = string.replace(allowedUsers[item], '\n', '')
+        allowedUsers[item] = string.replace(allowedUsers[item], ' ', '')
+        print allowedUsers[item]
+
+    requirements = []
+    requirements.append(soup.find_all('AttributeValue')[1].contents[0])
+    requirements.append(soup.find_all('AttributeValue')[2].contents[0])
+    for item in xrange(len(requirements)):
+        requirements[item] = string.replace(str(requirements[item]), '\n', '')
+        requirements[item] = string.replace(str(requirements[item]), ' ', '')
+
+    # Tuples baby
+    return allowedUsers, requirements
+
+
+def pip_compare(pep_attr, pip_attr):
+    if pep_attr == pip_attr:
+        return True
+    else:
+        return False
 
 
 if __name__ == '__main__':
@@ -48,32 +74,35 @@ if __name__ == '__main__':
         os.unlink(path_to_pip)
         os.mkfifo(path_to_pip, 0600)
 
+        parse_policy()
+        os.unlink(path_to_pip)
+"""
     try:
         while True:
             # Read request from PEP
             #with open(path_to_pep, 'r') as PIPE:
-             #   request = PIPE.read()
+            #   request = PIPE.read()
 
             #Compare request with parse_policy()
-
             # If bad then write CONST_DENY and continue to next loop
             pip_vars = "pip,Password1!,whenCreated"
+
             # Write request to PIP
             with open(path_to_pip, 'w') as PIPE:
                 PIPE.write(pip_vars)
 
             with open(path_to_pip, 'r') as PIPE:
                 pip_var_result = PIPE.read()
-		print pip_var_result
 
-            # make function to compare against what was requested from PEP
-            # Function should check if pip_var_result is None, if so return None
+            print pip_var_result
 
-            #with open(path_to_pep, 'w') as PIPE:
-                # if compare function above PERMIT/DENY
-                # PIPE.write(CONST_PERMIT)
-                # PIPE.write(CONST_DENY)
-            #    pass
+            # function compares against what was requested from PEP
+            pep_attr = "20161128"
+            with open(path_to_pep, 'w') as PIPE:
+                if pip_compare(pep_attr, pip_var_result):
+                    PIPE.write(CONST_PERMIT)
+                else:
+                    PIPE.write(CONST_DENY)
 
     except KeyboardInterrupt:
         os.unlink(path_to_pip)
@@ -83,3 +112,4 @@ if __name__ == '__main__':
         print "[!]Error: " + str(e)
         print "[!]Fix issue and restart pdp.py"
         sys.exit(1)
+"""
