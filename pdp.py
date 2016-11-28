@@ -51,28 +51,29 @@ if __name__ == '__main__':
     try:
         while True:
             # Read request from PEP
-            with open(path_to_pep, 'r') as PIPE:
-                request = PIPE.read()
+            #with open(path_to_pep, 'r') as PIPE:
+             #   request = PIPE.read()
 
             #Compare request with parse_policy()
 
             # If bad then write CONST_DENY and continue to next loop
-            pip_vars = ""
+            pip_vars = "pip,Password1!,whenCreated"
             # Write request to PIP
             with open(path_to_pip, 'w') as PIPE:
                 PIPE.write(pip_vars)
 
             with open(path_to_pip, 'r') as PIPE:
                 pip_var_result = PIPE.read()
+		print pip_var_result
 
             # make function to compare against what was requested from PEP
             # Function should check if pip_var_result is None, if so return None
 
-            with open(path_to_pep, 'w') as PIPE:
+            #with open(path_to_pep, 'w') as PIPE:
                 # if compare function above PERMIT/DENY
                 # PIPE.write(CONST_PERMIT)
                 # PIPE.write(CONST_DENY)
-                pass
+            #    pass
 
     except KeyboardInterrupt:
         os.unlink(path_to_pip)
@@ -80,5 +81,5 @@ if __name__ == '__main__':
 
     except OSError as e:
         print "[!]Error: " + str(e)
-        print "[!]Fix issue and restart pip.py"
+        print "[!]Fix issue and restart pdp.py"
         sys.exit(1)
