@@ -32,7 +32,7 @@ def parse_policy():
 
     soup = BeautifulSoup(xml, 'lxml-xml')
 
-    # 0=harambe 1=password 2=AccountCreationDate 3=smitty  6=bojak
+    # 0=harambe 1=password 2=whenCreated 3=smitty  6=bojak
     allowedUsers = []
     allowedUsers.append(soup.find_all('AttributeValue')[0].contents[0])
     allowedUsers.append(soup.find_all('AttributeValue')[3].contents[0])
@@ -51,6 +51,43 @@ def parse_policy():
 
     # Tuples baby
     return allowedUsers, requirements
+
+def parse_request(request):
+    try:
+        with open('request.xml', 'r') as XML:
+            request = XML.read()
+    except IOError:
+        print "[!] request.xml could not be opened"
+        sys.exit(1)
+
+    soup = BeautifulSoup(request, 'lxml-xml')
+
+    search = soup.find_all('Attribute')
+    attribute_values = []
+    # pip
+    attribute_values.append(search[0].contents[0])
+    # Password1!
+    attribute_values.append(search[1].contents[0])
+    # 20161128
+    attribute_values.append(search[2].contents[0])
+    for item in xrange(len(attribute_values)):
+        attribute_values[item] = string.replace(str(attribute_values[item]), '\n', '')
+        attribute_values[item] = string.replace(str(attribute_values[item]), ' ', '')
+        print attribute_values[item]
+
+    attribute_names = []
+    # pip
+    attribute_names.append(search[0]['AttributeId'])
+    # Password
+    attribute_names.append(search[1]['AttributeId'])
+    # whenCreated
+    attribute_names.append(search[2]['AttributeId'])
+    for item in xrange(len(attribute_names)):
+        attribute_names[item] = string.replace(str(attribute_names[item]), '\n', '')
+        attribute_names[item] = string.replace(str(attribute_names[item]), ' ', '')
+        print attribute_names[item]
+
+    return attribute_names, attribute_values
 
 
 def pip_compare(pep_attr, pip_attr):
@@ -74,18 +111,32 @@ if __name__ == '__main__':
         os.unlink(path_to_pip)
         os.mkfifo(path_to_pip, 0600)
 
-        parse_policy()
-        os.unlink(path_to_pip)
-"""
     try:
         while True:
-            # Read request from PEP
-            #with open(path_to_pep, 'r') as PIPE:
-            #   request = PIPE.read()
+            #Read request from PEP
+            with open(path_to_pep, 'r') as PIPE:
+               request = PIPE.read()
 
-            #Compare request with parse_policy()
-            # If bad then write CONST_DENY and continue to next loop
-            pip_vars = "pip,Password1!,whenCreated"
+            # Check request against policy
+            check_one = False
+            check_two = False
+            req_names, req_values = parse_request(request)
+            allowedUsers, attrs = parse_policy()
+            # Check to see if the user exists in the policy
+            for name in allowedUsers:
+                if name == req_values[0]:
+                    check_one = True
+
+            # Check for proper Ids such as password and whenCreated
+            if attrs[1] == req_names[0] and attrs[2] == req_names[1]:
+                check_two = True
+
+            if not (check_one and check_two):
+                with open(path_to_pep, 'w') as PIPE:
+                    PIPE.write(CONST_DENY)
+                continue
+
+            pip_vars = req_values[0] + "," + req_values[1] + "," + req_values[2]
 
             # Write request to PIP
             with open(path_to_pip, 'w') as PIPE:
@@ -112,4 +163,3 @@ if __name__ == '__main__':
         print "[!]Error: " + str(e)
         print "[!]Fix issue and restart pdp.py"
         sys.exit(1)
-"""
