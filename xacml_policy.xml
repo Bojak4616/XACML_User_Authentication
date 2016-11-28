@@ -31,17 +31,12 @@
               DataType="http://www.w3.org/2001/XMLSchema#string">
               Password
               </AttributeValue>
-            <AttributeDesignator
-              MustBePresent="True"
-              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+            <AttributeDesignator MustBePresent="True"/>
 
-              <AttributeValue
-              DataType="http://www.w3.org/2001/XMLSchema#string">
+              <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
                 whenCreated
               </AttributeValue>
-            <AttributeDesignator
-              MustBePresent="True"
-              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+            <AttributeDesignator MustBePresent="True"/>
           </SubjectMatch>
         </Subject>
 
@@ -59,17 +54,13 @@
               DataType="http://www.w3.org/2001/XMLSchema#string">
               Password
               </AttributeValue>
-            <AttributeDesignator
-              MustBePresent="True"
-              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+            <AttributeDesignator MustBePresent="True"/>
 
               <AttributeValue
               DataType="http://www.w3.org/2001/XMLSchema#string">
                 whenCreated
               </AttributeValue>
-            <AttributeDesignator
-              MustBePresent="True"
-              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+            <AttributeDesignator MustBePresent="True"/>
           </SubjectMatch>
         </Subject>
 
@@ -87,17 +78,13 @@
               DataType="http://www.w3.org/2001/XMLSchema#string">
               Password
               </AttributeValue>
-            <AttributeDesignator
-              MustBePresent="True"
-              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+            <AttributeDesignator MustBePresent="True"/>
 
               <AttributeValue
               DataType="http://www.w3.org/2001/XMLSchema#string">
                 whenCreated
               </AttributeValue>
-            <AttributeDesignator
-              MustBePresent="True"
-              DataType="urn:oasis:names:tc:xacml:1.0:data-type:rfc822Name"/>
+            <AttributeDesignator MustBePresent="True"/>
           </SubjectMatch>
         </Subject>
 
