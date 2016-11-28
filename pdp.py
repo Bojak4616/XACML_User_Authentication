@@ -107,9 +107,13 @@ if __name__ == '__main__':
         # Create a fresh pipe, deleting anything that was previously in there
         # Limit permissions so that other users can not read the pipe
         os.mkfifo(path_to_pip, 0600)
+	os.mkfifo(path_to_pep, 0600)
     except OSError:
         os.unlink(path_to_pip)
         os.mkfifo(path_to_pip, 0600)
+	
+	os.unlink(path_to_pep)
+        os.mkfifo(path_to_pep, 0600)
 
     try:
         while True:
