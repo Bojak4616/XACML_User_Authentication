@@ -99,7 +99,7 @@ def pip_compare(pep_attr, pip_attr):
 
 if __name__ == '__main__':
     path_to_pip = os.getcwd() + '/pdp_pip'
-    path_to_pep = os.getcwd() + '/pep_pdp'
+    path_to_pep = '/tmp/pep_pdp'
     # Pipes faster than writing to disk
 
     # Try/Except to prevent someone from create a pipe with the same name to DoS
