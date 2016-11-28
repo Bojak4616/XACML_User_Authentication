@@ -7,7 +7,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <conio.h>
 
 /* expected hook */
 PAM_EXTERN int pam_sm_setcred( pam_handle_t *pamh, int flags, int argc, const char **argv ) {
@@ -22,12 +21,13 @@ PAM_EXTERN int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const c
 /* expected hook, this is where custom stuff happens */
 PAM_EXTERN int pam_sm_authenticate( pam_handle_t *pamh, int flags,int argc, const char **argv ) {
 	int retval;
-
+	char *prompt = "";
 	const char* pUsername;
 	const char* password;
 	const char* whenCreated;
 	const char* path_to_pdp = "/tmp/pep_pdp";
 	struct pam_message msg;
+	const struct pam_message *msgp;
 	
 	retval = pam_get_item(pamh, &pUsername, "Username: ");
 	msg.msg_style = PAM_PROMPT_ECHO_OFF;
