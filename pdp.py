@@ -40,7 +40,6 @@ def parse_policy():
     for item in xrange(len(allowedUsers)):
         allowedUsers[item] = string.replace(allowedUsers[item], '\n', '')
         allowedUsers[item] = string.replace(allowedUsers[item], ' ', '')
-        print allowedUsers[item]
 
     requirements = []
     requirements.append(soup.find_all('AttributeValue')[1].contents[0])
@@ -120,7 +119,7 @@ if __name__ == '__main__':
             #Read request from PEP
             with open(path_to_pep, 'r') as PIPE:
                request = PIPE.read()
-
+	    print request
             # Check request against policy
             check_one = False
             check_two = False
