@@ -2,24 +2,6 @@
 #include <security/pam_misc.h>
 #include <stdio.h>
 
-/*
-struct pam_message {
-    int msg_style;
-    const char *msg;
-};
-
-struct pam_response {
-    char *resp;
-    int resp_retcode;
-};
-
-struct pam_conv *conv{
-    int (*conv)(int num_msg, const struct pam_message **msg,
-                struct pam_response **resp, void *appdata_ptr);
-    void *appdata_ptr;
-};
-*/
-
 const struct pam_conv conv = {
 	misc_conv,
 	NULL
@@ -36,26 +18,25 @@ int main(int argc, char *argv[]) {
 	}
 
 	user = argv[1];
-	//char *password = argv[2];
-	//resp[0].resp = argv[2];
 	
 	retval = pam_start("first_pam", user, &conv, &pamh);
 	
-	//printf("%s\n", resp[0].resp);	
-	//Need to send password via conversation
-	
-	// Are the credentials correct?
+	// Did pam start ok?
 	if (retval == PAM_SUCCESS) {
-		printf("Credentials accepted.\n");
-		retval = pam_authenticate(pamh, 0);
+		printf("Process Started.\n");
+	} else {
+		printf("Ded.\n");
 	}
 
-	// Can the accound be used at this time?
+	// Let the user login
+	retval = pam_authenticate(pamh, 0);
 	if (retval == PAM_SUCCESS) {
-		printf("Account is valid.\n");
-		retval = pam_acct_mgmt(pamh, 0);
+		printf("Credentials Accepted.\n");
+	} else {
+		printf("Credentials Denied.\n");
 	}
 
+	retval = pam_acct_mgmt(pamh, 0);
 	// Did everything work?
 	if (retval == PAM_SUCCESS) {
 		printf("Authenticated\n");
@@ -72,3 +53,4 @@ int main(int argc, char *argv[]) {
 
 	return retval == PAM_SUCCESS ? 0 : 1;
 }
+
