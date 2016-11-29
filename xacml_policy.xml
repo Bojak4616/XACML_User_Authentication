@@ -30,12 +30,13 @@
             <AttributeValue
               DataType="http://www.w3.org/2001/XMLSchema#string">
               Password
-              </AttributeValue>
+            </AttributeValue>
             <AttributeDesignator MustBePresent="True"/>
 
-              <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
-                whenCreated
-              </AttributeValue>
+            <AttributeValue
+              DataType="http://www.w3.org/2001/XMLSchema#string">
+              whenCreated
+            </AttributeValue>
             <AttributeDesignator MustBePresent="True"/>
           </SubjectMatch>
         </Subject>
@@ -53,13 +54,13 @@
             <AttributeValue
               DataType="http://www.w3.org/2001/XMLSchema#string">
               Password
-              </AttributeValue>
+            </AttributeValue>
             <AttributeDesignator MustBePresent="True"/>
 
-              <AttributeValue
+            <AttributeValue
               DataType="http://www.w3.org/2001/XMLSchema#string">
-                whenCreated
-              </AttributeValue>
+              whenCreated
+            </AttributeValue>
             <AttributeDesignator MustBePresent="True"/>
           </SubjectMatch>
         </Subject>
@@ -77,13 +78,13 @@
             <AttributeValue
               DataType="http://www.w3.org/2001/XMLSchema#string">
               Password
-              </AttributeValue>
+            </AttributeValue>
             <AttributeDesignator MustBePresent="True"/>
 
-              <AttributeValue
+            <AttributeValue
               DataType="http://www.w3.org/2001/XMLSchema#string">
-                whenCreated
-              </AttributeValue>
+              whenCreated
+            </AttributeValue>
             <AttributeDesignator MustBePresent="True"/>
           </SubjectMatch>
         </Subject>
