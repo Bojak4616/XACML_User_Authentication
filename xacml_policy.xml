@@ -29,7 +29,7 @@
 
             <AttributeValue
               DataType="http://www.w3.org/2001/XMLSchema#string">
-              Password
+              password
             </AttributeValue>
             <AttributeDesignator MustBePresent="True"/>
 

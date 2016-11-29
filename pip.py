@@ -56,9 +56,10 @@ if __name__ == '__main__':
                     PIPE.write("None")
                     continue
 
-            print results
             var_string = str(results[0][0][1]['whenCreated'])[2:10]
-            PIPE.write(var_string)
+            print var_string
+	    with open(path_to_pdp, 'w') as PIPE:
+      	        PIPE.write(var_string)
 
     except KeyboardInterrupt:
         print "Done"

@@ -5,21 +5,9 @@ import sys
 import string
 from bs4 import BeautifulSoup
 
-CONST_PERMIT = """
-<Response>
-  <Result>
-    <Decision>Permit</Decision>
-  </Result>
-</Response>
-"""
+CONST_PERMIT = "<Response><Result><Decision>Permit</Decision></Result></Response>"
 
-CONST_DENY = """
-<Response>
-  <Result>
-    <Decision>Deny</Decision>
-  </Result>
-</Response>
-"""
+CONST_DENY = "<Response><Result><Decision>Deny</Decision></Result></Response>"
 
 
 def parse_policy():
@@ -42,6 +30,7 @@ def parse_policy():
         allowedUsers[item] = string.replace(allowedUsers[item], ' ', '')
 
     requirements = []
+    requirements.append(soup.find_all('SubjectAttributeDesignator')[0].contents[0])    
     requirements.append(soup.find_all('AttributeValue')[1].contents[0])
     requirements.append(soup.find_all('AttributeValue')[2].contents[0])
     for item in xrange(len(requirements)):
@@ -52,13 +41,6 @@ def parse_policy():
     return allowedUsers, requirements
 
 def parse_request(request):
-    try:
-        with open('request.xml', 'r') as XML:
-            request = XML.read()
-    except IOError:
-        print "[!] request.xml could not be opened"
-        sys.exit(1)
-
     soup = BeautifulSoup(request, 'lxml-xml')
 
     search = soup.find_all('Attribute')
@@ -72,7 +54,6 @@ def parse_request(request):
     for item in xrange(len(attribute_values)):
         attribute_values[item] = string.replace(str(attribute_values[item]), '\n', '')
         attribute_values[item] = string.replace(str(attribute_values[item]), ' ', '')
-        print attribute_values[item]
 
     attribute_names = []
     # pip
@@ -84,7 +65,6 @@ def parse_request(request):
     for item in xrange(len(attribute_names)):
         attribute_names[item] = string.replace(str(attribute_names[item]), '\n', '')
         attribute_names[item] = string.replace(str(attribute_names[item]), ' ', '')
-        print attribute_names[item]
 
     return attribute_names, attribute_values
 
@@ -119,7 +99,6 @@ if __name__ == '__main__':
             #Read request from PEP
             with open(path_to_pep, 'r') as PIPE:
                request = PIPE.read()
-	    print request
             # Check request against policy
             check_one = False
             check_two = False
@@ -130,24 +109,22 @@ if __name__ == '__main__':
                 if name == req_values[0]:
                     check_one = True
 
-            # Check for proper Ids such as password and whenCreated
-            if attrs[1] == req_names[0] and attrs[2] == req_names[1]:
+            # Check for proper Ids such as username, password and whenCreated
+            if attrs[0] == req_names[0] and attrs[1] == req_names[1] and attrs[2] == req_names[2]:
                 check_two = True
-
             if not (check_one and check_two):
                 with open(path_to_pep, 'w') as PIPE:
                     PIPE.write(CONST_DENY)
-                continue
+                    continue
                         # username              Password            whenCreated
-            pip_vars = req_values[0] + "," + req_values[1] + "," + req_names[1]
-
+            pip_vars = req_values[0] + "," + req_values[1] + "," + req_names[2]
+	    print pip_vars
             # Write request to PIP
             with open(path_to_pip, 'w') as PIPE:
                 PIPE.write(pip_vars)
 
             with open(path_to_pip, 'r') as PIPE:
                 pip_var_result = PIPE.read()
-
             # function compares against what was requested from PEP
             pep_attr = req_values[2]
             with open(path_to_pep, 'w') as PIPE:
@@ -164,3 +141,4 @@ if __name__ == '__main__':
         print "[!]Error: " + str(e)
         print "[!]Fix issue and restart pdp.py"
         sys.exit(1)
+

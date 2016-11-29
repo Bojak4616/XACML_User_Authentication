@@ -131,42 +131,44 @@ if(strlen(passwordData) > 50)
 if(strlen(whenCreated) > 8)
 	return(PAM_AUTH_ERR);
 
-sprintf(request, "<Request><Subject><Attribute AttributeId=\"username\""
+sprintf(request, "<Request><Subject><Attribute AttributeId=\"username\" "
 "DataType=\"http://www.w3.org/2001/XMLSchema#string\">"
 "%s"
 "</Attribute></Subject><Resource>"
-"<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\""
+"<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\" "
 "AttributeId=\"password\">"
 "%s"
 "</Attribute></Resource><Action>"
-"<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\""
+"<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\" "
 "AttributeId=\"whenCreated\">"
 "%s"
 "</Attribute></Action></Request>", user, passwordData, whenCreated);
 
  FILE *fp;
  fp = fopen(path_to_pdp, "w");
- fputs(request, fp);
+ fprintf(fp,"%s", request);
 if (fp == NULL) {
   fprintf(stderr, "Can't open named pipe!\n");
   exit(1);
 }
  fclose(fp);
- /*
-  char* result;
-  *fp = FILE *fopen(path_to_pdp, 'r');
-  do
-  {
-     fscanf(q,"%s", result);
-  }
-  while( !feof(q) );
+ 
+  char result[100];
+  FILE *fp2;
+  fp2 = fopen(path_to_pdp, "r");
+if (fp2 == NULL) {
+  fprintf(stderr, "Can't open named pipe!\n");
+  exit(1);
+}
+  fscanf(fp2, "%s", result);
+
+  puts(result);
+  fclose(fp2);
 
   if (strstr(result, "<Decision>Deny</Decision>") != NULL)
     	return PAM_AUTH_ERR;
   
 
-  unlink(path_to_pdp);
-*/
   return(PAM_SUCCESS);
 }
 
