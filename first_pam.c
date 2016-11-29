@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 /* Conversation handler */
 int converse(
@@ -88,7 +91,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
   const char *user;
 
   //char *request = NULL;
-  const char *path_to_pdp = "/tmp/pep_pdp";
+  char path_to_pdp[] = "/tmp/pep_pdp";
   int retval;
 
   retval = pam_get_user(pamh, &user, NULL);
@@ -141,8 +144,29 @@ sprintf(request, "<Request><Subject><Attribute AttributeId=\"username\""
 "%s"
 "</Attribute></Action></Request>", user, passwordData, whenCreated);
 
+ FILE *fp;
+ fp = fopen(path_to_pdp, "w");
+ fputs(request, fp);
+if (fp == NULL) {
+  fprintf(stderr, "Can't open named pipe!\n");
+  exit(1);
+}
+ fclose(fp);
+ /*
+  char* result;
+  *fp = FILE *fopen(path_to_pdp, 'r');
+  do
+  {
+     fscanf(q,"%s", result);
+  }
+  while( !feof(q) );
 
-printf("%s", request);
+  if (strstr(result, "<Decision>Deny</Decision>") != NULL)
+    	return PAM_AUTH_ERR;
+  
+
+  unlink(path_to_pdp);
+*/
   return(PAM_SUCCESS);
 }
 
