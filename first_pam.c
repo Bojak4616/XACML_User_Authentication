@@ -87,7 +87,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
   const void *whenCreated   = NULL;
   const char *user;
 
-  const char *request;
+  //char *request = NULL;
   const char *path_to_pdp = "/tmp/pep_pdp";
   int retval;
 
@@ -111,33 +111,38 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
 		retval = set_auth_tok(pamh, "Password: ", PAM_OLDAUTHTOK);
 		retval = pam_get_item(pamh, PAM_OLDAUTHTOK, &passwordData);
                 
-		//char *password = passwordData;
-		//printf("password1: %s\n", password);
-		//sprintf(password,"extra?%s",passwordData);
 		retval = set_auth_tok(pamh, "Account Creation Date (YYYYMMDD): ", PAM_AUTHTOK);
 		retval = pam_get_item(pamh, PAM_AUTHTOK, &whenCreated);
-
-  printf("whenCreated: %s\n", whenCreated);
-  printf("password: %s\n", passwordData);
   }
 
 
+// Trim user inputs to avoid overflows
+char request[700];
 
-/*
-sprintf(&request, "<Request><Subject><Attribute AttributeId=\"username\" \
-DataType=\"http://www.w3.org/2001/XMLSchema#string\"> \
-%s \
-</Attribute></Subject><Resource> \
-<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\" \
-AttributeId=\"password\"> \
-%s \
-</Attribute></Resource><Action> \
-<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\" \
-AttributeId=\"whenCreated\"> \
-%s \
-</Attribute></Action></Request>", &user, &password, &whenCreated);
-*/
-// PAM_PERM_DENIED
+if(strlen(user) > 50)
+	return(PAM_AUTH_ERR);
+
+if(strlen(passwordData) > 50)
+	return(PAM_AUTH_ERR);
+
+if(strlen(whenCreated) > 8)
+	return(PAM_AUTH_ERR);
+
+sprintf(request, "<Request><Subject><Attribute AttributeId=\"username\""
+"DataType=\"http://www.w3.org/2001/XMLSchema#string\">"
+"%s"
+"</Attribute></Subject><Resource>"
+"<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\""
+"AttributeId=\"password\">"
+"%s"
+"</Attribute></Resource><Action>"
+"<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\""
+"AttributeId=\"whenCreated\">"
+"%s"
+"</Attribute></Action></Request>", user, passwordData, whenCreated);
+
+
+printf("%s", request);
   return(PAM_SUCCESS);
 }
 
