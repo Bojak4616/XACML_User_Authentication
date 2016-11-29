@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
 		printf("Process Started.\n");
 	} else {
 		printf("Ded.\n");
+		exit(1);
 	}
 
 	// Let the user login
@@ -34,6 +35,7 @@ int main(int argc, char *argv[]) {
 		printf("Credentials Accepted.\n");
 	} else {
 		printf("Credentials Denied.\n");
+		exit(1);
 	}
 
 	retval = pam_acct_mgmt(pamh, 0);
@@ -42,6 +44,7 @@ int main(int argc, char *argv[]) {
 		printf("Authenticated\n");
 	} else {
 		printf("Not Authenticated\n");
+		exit(1);
 	}
 
 	// close PAM (end session)
