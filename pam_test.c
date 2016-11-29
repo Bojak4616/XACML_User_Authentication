@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
 	int retval;
 	const char* user;
 	
-	if(argc != 3) {
-		printf("Usage: app [username] [password]\n");
+	if(argc != 2) {
+		printf("Usage: app [username]\n");
 		exit(1);
 	}
 

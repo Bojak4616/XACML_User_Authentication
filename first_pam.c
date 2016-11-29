@@ -34,7 +34,7 @@ int converse(
 }
 
 /* Prompt for both Password and whenCreated */
-int set_auth_tok(pam_handle_t *pamh, int flags, const char* prompt) {
+int set_auth_tok(pam_handle_t *pamh, const char* prompt, int TOK) {
 
 	int retval;
 	char *p;
@@ -61,7 +61,7 @@ int set_auth_tok(pam_handle_t *pamh, int flags, const char* prompt) {
 	}
 
 	free(resp);
-	pam_set_item(pamh, PAM_AUTHTOK, p);
+	pam_set_item(pamh, TOK, p);
 	return PAM_SUCCESS;
 }
 
@@ -83,9 +83,8 @@ PAM_EXTERN int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const c
 
 /* PAM entry point for authentication verification */
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-  const void *passwordData = NULL;
-  const void *whenCreated  = NULL;
-  const void *password;
+  const void *passwordData  = NULL;
+  const void *whenCreated   = NULL;
   const char *user;
 
   const char *request;
@@ -107,19 +106,21 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
     return(retval);
   }
 
-  if (!passwordData) {
-		retval = set_auth_tok(pamh, flags, "Password: ");
-		retval = pam_get_item(pamh, PAM_AUTHTOK, &passwordData);
-printf("password1: %s\n", passwordData);
-password = &passwordData;
 
-		retval = set_auth_tok(pamh, flags, "Account Creation Date (YYYYMMDD): ");
+  if (!passwordData) {
+		retval = set_auth_tok(pamh, "Password: ", PAM_OLDAUTHTOK);
+		retval = pam_get_item(pamh, PAM_OLDAUTHTOK, &passwordData);
+                
+		//char *password = passwordData;
+		//printf("password1: %s\n", password);
+		//sprintf(password,"extra?%s",passwordData);
+		retval = set_auth_tok(pamh, "Account Creation Date (YYYYMMDD): ", PAM_AUTHTOK);
 		retval = pam_get_item(pamh, PAM_AUTHTOK, &whenCreated);
 
-  printf("whenCreated1: %s\n", whenCreated);
+  printf("whenCreated: %s\n", whenCreated);
+  printf("password: %s\n", passwordData);
   }
-printf("password2: %s\n", password);
- printf("whenCreated2: %s\n", whenCreated);
+
 
 
 /*
