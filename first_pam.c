@@ -11,6 +11,60 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Conversation handler */
+int converse(
+	pam_handle_t *pamh,
+	int nargs,
+	struct pam_message **message,
+	struct pam_response **response
+		){
+	int retval;
+	struct pam_conv *conv;
+
+	retval = pam_get_item(pamh, PAM_CONV, (const void **)&conv);
+	if (retval == PAM_SUCCESS) {
+	  	retval = conv->conv(
+	  		nargs,
+	  		( const struct pam_message ** ) message,
+	  		response,
+	  		conv->appdata_ptr
+	  		);
+     	}
+	return retval;
+}
+
+/* Prompt for both Password and whenCreated */
+int set_auth_tok(pam_handle_t *pamh, int flags, const char* prompt) {
+
+	int retval;
+	char *p;
+
+	struct pam_message msg[1],*pmsg[1];
+	struct pam_response *resp;
+
+	/* set up conversation call */
+	pmsg[0] = &msg[0];
+	msg[0].msg_style = PAM_PROMPT_ECHO_OFF;
+	msg[0].msg = prompt;
+	resp = NULL;
+
+	if ((retval = converse( pamh, 1 , pmsg, &resp )) != PAM_SUCCESS)
+		return retval;
+
+	if (resp) {
+		p = resp[ 0 ].resp;
+
+		
+	  	resp[ 0 ].resp = NULL;
+	} else {
+		return PAM_CONV_ERR;
+	}
+
+	free(resp);
+	pam_set_item(pamh, PAM_AUTHTOK, p);
+	return PAM_SUCCESS;
+}
+
 
 /* PAM entry point for session creation */
 PAM_EXTERN int pam_sm_open_session(pam_handle_t *pamh, int flags, int argc, const char **argv) {
@@ -29,43 +83,61 @@ PAM_EXTERN int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const c
 
 /* PAM entry point for authentication verification */
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-  const char *user = NULL;
-  const char *password = NULL;
-  struct pam_conv *conv;
-  struct pam_message msg;
-  const struct pam_message *msgp;
-  struct pam_response *resp;
-  resp = NULL;
+  const void *passwordData = NULL;
+  const void *whenCreated  = NULL;
+  const void *password;
+  const char *user;
+
+  const char *request;
+  const char *path_to_pdp = "/tmp/pep_pdp";
   int retval;
- 
-  retval = pam_get_user(pamh, &user, "Username: ");
+
+  retval = pam_get_user(pamh, &user, NULL);
   if (user == NULL){
-    return(PAM_IGNORE);
+    printf("null username\n");
+    return(PAM_AUTH_ERR);
   }
 
-  printf("%s\n",user);
+  printf("user: %s\n",user);
 
-    retval = pam_get_item(pamh, PAM_CONV, (const void **)&conv);
-    if (retval != PAM_SUCCESS)
-        return (PAM_SYSTEM_ERR);
-    msg.msg_style = PAM_PROMPT_ECHO_ON;
-    msg.msg = "Password: ";
-    msgp = &msg;
+  retval = pam_get_item(pamh, PAM_AUTHTOK, &passwordData);
 
-    //get password
-    retval = (*conv->conv)(1, &msgp, &resp, conv->appdata_ptr);
-    if (resp != NULL) {
-        if (retval == PAM_SUCCESS)
-            password = resp->resp;
-        else
-            free(resp->resp);
-        free(resp);
-    }
+  if (retval != PAM_SUCCESS){
+    printf("Failed to get password\n");
+    return(retval);
+  }
 
-  //retval = pam_get_authtok(pamh, PAM_AUTHTOK, password, "Password: ");
+  if (!passwordData) {
+		retval = set_auth_tok(pamh, flags, "Password: ");
+		retval = pam_get_item(pamh, PAM_AUTHTOK, &passwordData);
+printf("password1: %s\n", passwordData);
+password = &passwordData;
 
-  printf("%s\n",password);
-  return(PAM_IGNORE);
+		retval = set_auth_tok(pamh, flags, "Account Creation Date (YYYYMMDD): ");
+		retval = pam_get_item(pamh, PAM_AUTHTOK, &whenCreated);
+
+  printf("whenCreated1: %s\n", whenCreated);
+  }
+printf("password2: %s\n", password);
+ printf("whenCreated2: %s\n", whenCreated);
+
+
+/*
+sprintf(&request, "<Request><Subject><Attribute AttributeId=\"username\" \
+DataType=\"http://www.w3.org/2001/XMLSchema#string\"> \
+%s \
+</Attribute></Subject><Resource> \
+<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\" \
+AttributeId=\"password\"> \
+%s \
+</Attribute></Resource><Action> \
+<Attribute DataType=\"http://www.w3.org/2001/XMLSchema#string\" \
+AttributeId=\"whenCreated\"> \
+%s \
+</Attribute></Action></Request>", &user, &password, &whenCreated);
+*/
+// PAM_PERM_DENIED
+  return(PAM_SUCCESS);
 }
 
 /*

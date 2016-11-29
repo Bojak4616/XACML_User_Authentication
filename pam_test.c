@@ -20,12 +20,15 @@ struct pam_conv *conv{
 };
 */
 
+const struct pam_conv conv = {
+	misc_conv,
+	NULL
+};
+
 int main(int argc, char *argv[]) {
 	pam_handle_t* pamh = NULL;
 	int retval;
-	const char* user = "nobody";
-	struct pam_conv *conv;
-	struct pam_response *resp;
+	const char* user;
 	
 	if(argc != 3) {
 		printf("Usage: app [username] [password]\n");
@@ -34,13 +37,13 @@ int main(int argc, char *argv[]) {
 
 	user = argv[1];
 	//char *password = argv[2];
-	//resp->resp = "String";
+	//resp[0].resp = argv[2];
+	
 	retval = pam_start("first_pam", user, &conv, &pamh);
 	
-	//printf("%s\n", resp->resp);
+	//printf("%s\n", resp[0].resp);	
 	//Need to send password via conversation
 	
-
 	// Are the credentials correct?
 	if (retval == PAM_SUCCESS) {
 		printf("Credentials accepted.\n");
