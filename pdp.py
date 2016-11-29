@@ -139,8 +139,8 @@ if __name__ == '__main__':
                 with open(path_to_pep, 'w') as PIPE:
                     PIPE.write(CONST_DENY)
                 continue
-
-            pip_vars = req_values[0] + "," + req_values[1] + "," + req_values[2]
+                        # username              Password            whenCreated
+            pip_vars = req_values[0] + "," + req_values[1] + "," + req_names[1]
 
             # Write request to PIP
             with open(path_to_pip, 'w') as PIPE:
@@ -149,10 +149,8 @@ if __name__ == '__main__':
             with open(path_to_pip, 'r') as PIPE:
                 pip_var_result = PIPE.read()
 
-            print pip_var_result
-
             # function compares against what was requested from PEP
-            pep_attr = "20161128"
+            pep_attr = req_values[2]
             with open(path_to_pep, 'w') as PIPE:
                 if pip_compare(pep_attr, pip_var_result):
                     PIPE.write(CONST_PERMIT)
