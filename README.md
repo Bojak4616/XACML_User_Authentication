@@ -34,3 +34,5 @@ account requisite first_pam.so
 - Only the users harambe, smitty and bojak are allowed users (defined in xacml_policy.xml)
 
 - Line https://github.com/Bojak4616/XACML_User_Authentication/blob/master/pip.py#L13 will need to be changed to your LDAP server
+
+- Line https://github.com/Bojak4616/XACML_User_Authentication/blob/master/buildPam.sh#L3 the path may need to be changed to /lib/security depending on your distro. I used CentOS.
